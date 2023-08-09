@@ -33,12 +33,20 @@ Sample Application for Skack API, which can retrieve all DM messages in specific
     
     - Find ID of target channel
 
-      - Set environment value as SLACK_CHANNEL_ID
+      - Set environment value as SLACK_CHANNEL_ID, or set query parameter as `channel_id`
 
 
-- Public application server for Node.js
+## How to use
 
-    - I would describe followings as you use IBM Cloud for this environment.
+- Run application
+
+  - `$ npm install`
+
+  - `$ SLACK_USER_OAUTH_TOKEN=xxxxxx node app`
+
+- Run **history** API
+
+  - `http://localhost:8080/history?channel_id=XXXXXX`
 
 
 ## Links

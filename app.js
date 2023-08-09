@@ -25,9 +25,11 @@ app.use( express.Router() );
 
 app.get( '/history', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
+  var channel_id = SLACK_CHANNEL_ID;
+  if( req.query.channel_id ){ channel_id = req.query.channel_id; }
 
-  if( SLACK_USER_OAUTH_TOKEN && SLACK_CHANNEL_ID ){
-    var messages = await getDirectMessages();
+  if( SLACK_USER_OAUTH_TOKEN && channel_id ){
+    var messages = await getDirectMessages( channel_id );
     var p = JSON.stringify( { status: true, messages: messages }, null, 2 );
     res.write( p );
     res.end();
@@ -39,12 +41,12 @@ app.get( '/history', async function( req, res ){
   }
 });
 
-async function getDirectMessages(){
+async function getDirectMessages( channel_id ){
   return new Promise( async ( resolve, reject ) => {
     var next_cursor = '';
     var messages = [];
     do{
-      var r = await getDMs( next_cursor );
+      var r = await getDMs( channel_id, next_cursor );
       if( r.status ){
         r.messages.forEach( function( message ){
           messages.push( message );
@@ -59,7 +61,7 @@ async function getDirectMessages(){
   });
 }
 
-async function getDMs( next_cursor ){
+async function getDMs( channel_id, next_cursor ){
   return new Promise( ( resolve, reject ) => {
     var messages = [];
     var option = {
@@ -69,7 +71,7 @@ async function getDMs( next_cursor ){
       //url: 'https://slack.com/api/im.history',
       url: 'https://slack.com/api/conversations.history',  //. DM もこれ
       method: 'POST',
-      json: { channel: SLACK_CHANNEL_ID }
+      json: { channel: channel_id }
     };
     if( next_cursor ){
       option.json.cursor = next_cursor;
